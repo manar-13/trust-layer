@@ -1,0 +1,9 @@
+# Where agent trust goes next (a two-year thesis)
+
+Most "trust" systems for AI agents today are a number: a reputation score, a star rating, a green checkmark. My own failure test shows why that's not enough — a signature only proves who signed a claim, not whether that signer's key is still safe to trust. A reputation score has the same gap: it summarizes the past, but doesn't let anyone verify, right now, that the thing granting the score is accountable.
+
+My bet: within two years, agent-to-agent trust will stop being "check a score" and start being "verify a signed, scoped, expiring claim" — closer to OAuth scopes or TLS certificates than a star rating. An agent won't be "trusted" in general. It will hold a specific, time-limited, revocable credential for one action, issued by one accountable party, verifiable independently instead of through a shared reputation database.
+
+The harder shift is key management, not scoring. My system proves a credential wasn't tampered with, but has no answer for a stolen private key — the realistic attack, not statement-tampering. The systems that win will treat identity like production infrastructure: short-lived credentials, fast revocation, a clear answer to "what happens the moment we learn a key leaked." Almost nobody building agent systems thinks about key compromise yet, because most agent trust today isn't cryptographic to begin with.
+
+The common thread with my last two projects: the interesting failures were never on the happy path. A memory engine that can't notice its own contradictions, a decision engine blind to patterns across calls, and now a trust system that can prove a claim wasn't altered but not that the key behind it is still safe. Trust at scale won't be won by whoever signs the most claims — it'll be won by whoever is most honest about the exact moment their proof stops meaning anything.
