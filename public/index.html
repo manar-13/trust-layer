@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Trust Layer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1117;
+            color: #e6e6e6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #9aa0ac;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .setup-box {
+            background: #1a2332;
+            border: 1px solid #2d4a6a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .setup-box h2 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .setup-box p {
+            color: #9aa0ac;
+            font-size: 13px;
+            margin: 0 0 12px;
+        }
+
+        .card {
+            background: #171a23;
+            border: 1px solid #262b38;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .card p.desc {
+            color: #9aa0ac;
+            margin: 0 0 14px;
+            font-size: 14px;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        button {
+            background: #1f2430;
+            color: #e6e6e6;
+            border: 1px solid #333a4a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2a3040;
+        }
+
+        button.primary {
+            background: #4c5eff;
+            border-color: #4c5eff;
+        }
+
+        button.primary:hover {
+            background: #3d4de0;
+        }
+
+        button.danger {
+            background: #3a1f24;
+            border-color: #6b2e37;
+        }
+
+        button.danger:hover {
+            background: #4a262c;
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #result {
+            background: #12141c;
+            border: 1px solid #262b38;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 8px;
+            min-height: 60px;
+        }
+
+        .decision {
+            border-left: 4px solid #4ade80;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            background: #171a23;
+        }
+
+        .decision.refuse {
+            border-left-color: #f87171;
+        }
+
+        .decision .outcome {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .decision .reason {
+            font-size: 14px;
+            color: #cfd3dc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .status-active {
+            background: #16321f;
+            color: #4ade80;
+        }
+
+        .status-revoked {
+            background: #2b2b2b;
+            color: #999;
+        }
+
+        .cred-item {
+            border-left: 3px solid #4c5eff;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            background: #171a23;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+
+        .empty {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        h3.section {
+            margin-top: 40px;
+            font-size: 20px;
+        }
+
+        code {
+            background: #1f2430;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🔐 Trust Layer</h1>
+    <p class="subtitle">A trust profile for AI agents built on real cryptographic signatures — not a made-up score.
+        Agents earn credentials, and every trust decision is checked against a verifiable signature.</p>
+
+    <div class="setup-box">
+        <h2>Step 1: Set up the demo agents</h2>
+        <p>Creates 3 agents: a trust authority, a <b>trusted agent</b> (who gets real signed credentials), and a
+            <b>stranger agent</b> (who gets none). Click this first.</p>
+        <button class="primary" onclick="setupDemo()">Set Up Demo Agents</button>
+        <span id="setup-status" style="margin-left:10px; color:#9aa0ac; font-size:13px;"></span>
+    </div>
+
+    <div class="card">
+        <h2>💳 Payment Authorization</h2>
+        <p class="desc">Can this agent approve a payment?</p>
+        <div class="btn-row">
+            <button onclick="runTask('payment', 'trusted-agent')" disabled id="btn-payment-trusted">Request as
+                trusted-agent</button>
+            <button onclick="runTask('payment', 'stranger-agent')" disabled id="btn-payment-stranger">Request as
+                stranger-agent</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🚀 Deployment Authorization</h2>
+        <p class="desc">Can this agent deploy to production?</p>
+        <div class="btn-row">
+            <button onclick="runTask('deployment', 'trusted-agent')" disabled id="btn-deployment-trusted">Request as
+                trusted-agent</button>
+            <button onclick="runTask('deployment', 'stranger-agent')" disabled id="btn-deployment-stranger">Request as
+                stranger-agent</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Data Access Authorization</h2>
+        <p class="desc">Can this agent access private data?</p>
+        <div class="btn-row">
+            <button onclick="runTask('data-access', 'trusted-agent')" disabled id="btn-data-access-trusted">Request as
+                trusted-agent</button>
+            <button onclick="runTask('data-access', 'stranger-agent')" disabled id="btn-data-access-stranger">Request as
+                stranger-agent</button>
+        </div>
+    </div>
+
+    <div id="result">
+        <p class="empty">Set up the demo, then click a scenario above to see the trust decision here.</p>
+    </div>
+
+    <h3 class="section">🕵️ Attack Simulation — Spoofing a Credential</h3>
+    <p class="desc" style="color:#9aa0ac;">Takes a real credential, tampers with it, and proves the signature check
+        catches the forgery.</p>
+    <button class="danger" onclick="runAttack()" disabled id="btn-attack">Attempt to Spoof trusted-agent's
+        Credential</button>
+    <div id="attack-result" style="margin-top:14px;"></div>
+
+    <h3 class="section">🔍 Trust Profile Inspector</h3>
+    <p class="desc" style="color:#9aa0ac;">Shows every credential ever issued, including revoked ones.</p>
+    <div class="btn-row">
+        <button onclick="inspect('trusted-agent')" disabled id="btn-inspect-trusted">Inspect trusted-agent</button>
+        <button onclick="inspect('stranger-agent')" disabled id="btn-inspect-stranger">Inspect stranger-agent</button>
+    </div>
+    <div id="inspector" style="margin-top:14px;"></div>
+
+    <script>
+        let setupDone = false;
+
+        async function post(url, body) {
+            const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            return res.json();
+        }
+        async function get(url) {
+            const res = await fetch(url);
+            return res.json();
+        }
+
+        async function setupDemo() {
+            document.getElementById("setup-status").textContent = "Setting up...";
+            await post("/api/agents", { id: "trust-authority" });
+            await post("/api/agents", { id: "trusted-agent" });
+            await post("/api/agents", { id: "stranger-agent" });
+
+            await post("/api/credentials/grant", {
+                issuerId: "trust-authority", subjectId: "trusted-agent",
+                statement: "authorized to approve payments up to $500", scope: "payment:approve"
+            });
+            await post("/api/credentials/grant", {
+                issuerId: "trust-authority", subjectId: "trusted-agent",
+                statement: "authorized to deploy to production", scope: "deploy:production"
+            });
+            await post("/api/credentials/grant", {
+                issuerId: "trust-authority", subjectId: "trusted-agent",
+                statement: "authorized to access analytics data", scope: "data:access"
+            });
+
+            setupDone = true;
+            document.getElementById("setup-status").textContent = "✅ Done — trusted-agent has 3 credentials, stranger-agent has none.";
+            document.querySelectorAll("button").forEach(b => b.disabled = false);
+        }
+
+        function renderDecision(decision) {
+            const el = document.getElementById("result");
+            const cls = decision.outcome === "accept" ? "decision" : "decision refuse";
+            el.innerHTML = `
+        <div class="${cls}">
+            <div class="outcome">${decision.outcome === "accept" ? "✅ ACCEPT" : "❌ REFUSE"}</div>
+            <div class="reason">${decision.reason}</div>
+        </div>
+    `;
+        }
+
+        async function runTask(type, requesterId) {
+            let body = { requesterId };
+            if (type === "payment") body.amount = 200;
+            if (type === "deployment") body.environment = "production";
+            if (type === "data-access") body.dataset = "analytics";
+            const decision = await post(`/api/tasks/${type}`, body);
+            renderDecision(decision);
+        }
+
+        async function runAttack() {
+            const result = await post("/api/attack/spoof", { agentId: "trusted-agent", scope: "payment:approve" });
+            const el = document.getElementById("attack-result");
+            if (result.error) {
+                el.innerHTML = `<p class="empty">${result.error}</p>`;
+                return;
+            }
+            el.innerHTML = `
+        <div class="cred-item">
+            <b>Original credential:</b> "${result.original.statement}"
+        </div>
+        <div class="cred-item" style="border-left-color:#f87171;">
+            <b>Tampered credential:</b> "${result.tampered.statement}"
+        </div>
+        <div class="warning-box" style="background:#2a1f10; border:1px solid #6b4e1e; color:${result.signatureStillValid ? '#f87171' : '#4ade80'}; padding:10px 14px; border-radius:8px; margin-top:8px;">
+            ${result.signatureStillValid
+                    ? "⚠️ Signature still valid — spoofing succeeded (this would be a bug)"
+                    : "✅ Signature verification FAILED for the tampered credential — the spoof was caught. The trust layer would refuse this."}
+        </div>
+    `;
+        }
+
+        async function inspect(agentId) {
+            const profile = await get(`/api/trust/${agentId}`);
+            const el = document.getElementById("inspector");
+            if (!profile.credentials.length) {
+                el.innerHTML = `<p class="empty">No credentials for ${agentId}.</p>`;
+                return;
+            }
+            el.innerHTML = profile.credentials.map(c => `
+        <div class="cred-item">
+            ${c.statement}
+            <span class="status-badge status-${c.status}">${c.status}</span>
+            <div style="color:#9aa0ac; margin-top:4px;">scope: <code>${c.scope}</code> · issued by ${c.issuerId}</div>
+        </div>
+    `).join("");
+        }
+    </script>
+</body>
+
+</html>
